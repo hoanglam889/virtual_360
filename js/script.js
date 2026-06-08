@@ -15,7 +15,23 @@ const viewer = pannellum.viewer('panorama-viewer', {
     "pitch": 0,
     "hfov": 100,
     "minHfov": 50,
-    "maxHfov": 120
+    "maxHfov": 120,
+    "hotSpots": [
+        {
+            "pitch": -0.6452,
+            "yaw": 144.5234,
+            "type": "info",
+            "text": "Khu liên hợp TDTT Rạch Chiếc",
+            "cssClass": "custom-arrow"
+        },
+        {
+            "pitch": -2.3097,
+            "yaw": 124.4251,
+            "type": "info",
+            "text": "Nút giao Cát Lái",
+            "cssClass": "custom-arrow"
+        }
+    ]
 });
 
 // Lấy các phần tử DOM phục vụ tương tác điều khiển
@@ -26,6 +42,7 @@ const autoRotateBtn = document.getElementById('auto-rotate-btn');
 const rotateIcon = document.getElementById('rotate-icon');
 const fullscreenBtn = document.getElementById('fullscreen-btn');
 const tourContainer = document.getElementById('tour-container');
+const homeBtn = document.getElementById('home-btn');
 
 // Đóng mở bảng thông tin (Collapsible Header Overlay)
 const headerOverlay = document.getElementById('header-overlay');
@@ -154,4 +171,17 @@ function updateToggleIcon() {
             <line x1="6" y1="6" x2="18" y2="18"></line>
         `;
     }
+}
+
+/* ==========================================
+   7. Tính năng nút Home (Về Ga Thủ Thiêm)
+   ========================================== */
+if (homeBtn) {
+    homeBtn.addEventListener('click', (e) => {
+        // Ngăn chặn sự kiện lan xuống WebGL
+        e.stopPropagation();
+        
+        // Lia camera quay về góc nhìn mặc định ban đầu mượt mà
+        viewer.lookAt(0, 0, 100, 1000);
+    });
 }
