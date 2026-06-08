@@ -395,23 +395,23 @@ body, html {
     }
 
     .controls-overlay {
-        bottom: calc(45px + env(safe-area-inset-bottom, 0px)); /* Cho thanh dịch lên cao tránh bị lấp */
-        padding: 6px 12px; /* Thu hẹp padding cho nhỏ gọn */
-        gap: 8px; /* Thu hẹp khoảng cách giữa các nút */
+        bottom: calc(75px + env(safe-area-inset-bottom, 0px)); /* Cho thanh dịch lên cao tránh bị lấp */
+        padding: 5px 10px; /* Thu hẹp padding cho nhỏ gọn */
+        gap: 6px; /* Thu hẹp khoảng cách giữa các nút */
     }
 
     .ctrl-btn {
-        width: 38px; /* Thu nhỏ nút tiện ích */
-        height: 38px;
+        width: 34px; /* Thu nhỏ nút tiện ích */
+        height: 34px;
     }
 
     .ctrl-btn svg {
-        width: 18px; /* Thu nhỏ kích thước icon */
-        height: 18px;
+        width: 15px; /* Thu nhỏ kích thước icon */
+        height: 15px;
     }
 
     .divider {
-        height: 18px; /* Thu nhỏ đường phân cách */
+        height: 14px; /* Thu nhỏ đường phân cách */
     }
 }
 
@@ -454,7 +454,7 @@ body, html {
     }
 
     .controls-overlay {
-        bottom: calc(25px + env(safe-area-inset-bottom, 0px)); /* Cho thanh dịch lên cao tránh bị lấp ở màn hình ngang */
+        bottom: calc(45px + env(safe-area-inset-bottom, 0px)); /* Cho thanh dịch lên cao tránh bị lấp ở màn hình ngang */
         padding: 5px 10px; /* Nhỏ gọn hơn */
         gap: 6px;
     }
@@ -465,12 +465,12 @@ body, html {
     }
 
     .ctrl-btn svg {
-        width: 16px; /* Thu nhỏ icon */
-        height: 16px;
+        width: 15px; /* Thu nhỏ icon */
+        height: 15px;
     }
 
     .divider {
-        height: 16px;
+        height: 14px;
     }
 }
 
@@ -512,8 +512,8 @@ body, html {
 /* Responsive cho Nút Home trên Mobile dọc */
 @media (max-width: 768px) {
     .home-btn {
-        padding: 6px 12px;
-        font-size: 0.75rem;
+        padding: 5px 10px;
+        font-size: 0.7rem;
     }
 }
 
