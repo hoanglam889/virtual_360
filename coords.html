@@ -230,6 +230,21 @@
             background-color: #0f172a;
             color: var(--text-light);
         }
+
+        /* Styling cho nút chuyển đổi chế độ */
+        .mode-btn {
+            transition: var(--transition-smooth);
+        }
+        .mode-btn.active {
+            border-color: rgba(0, 242, 254, 0.5) !important;
+            background: rgba(0, 242, 254, 0.15) !important;
+            color: #00f2fe !important;
+        }
+        .mode-btn:not(.active):hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+        }
     </style>
 </head>
 <body>
@@ -237,43 +252,83 @@
     <div id="panorama-container">
         
         <!-- Bảng điều khiển công cụ -->
-        <div class="helper-panel">
+        <div class="helper-panel" style="max-height: calc(100vh - 48px); overflow-y: auto;">
             <h1>Tọa độ Hotspots Helper</h1>
-            <span class="badge-step">Double Click Utility</span>
-            <p>Nhấp đúp chuột (Double Click) vào bất kỳ vị trí nào trên ảnh 360 để lấy tọa độ cấu hình Hotspot.</p>
+            <span class="badge-step" id="badge-step">Double Click Utility</span>
+            <p>Nhấp đúp chuột (Double Click) vào bất kỳ vị trí nào trên ảnh 360 để lấy tọa độ.</p>
             
-            <!-- Bộ chọn ảnh toàn cảnh -->
+            <!-- Bộ chọn ảnh (Hỗ trợ cả 3D và 2D) -->
             <div class="scene-selector-container">
-                <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Chọn hình ảnh 360:</label>
+                <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Chọn hình ảnh:</label>
                 <select id="scene-select" class="scene-select">
-                    <option value="images/pano.jpg">Ga Thủ Thiêm (pano.jpg)</option>
-                    <option value="images/pano_svd_RachChiec.JPG">Sân vận động Rạch Chiếc (pano_svd_RachChiec.JPG)</option>
-                    <option value="images/pano_catlai.JPG">Nút giao Cát Lái (pano_catlai.JPG)</option>
+                    <optgroup label="Ảnh 360° (3D Equirectangular)">
+                        <option value="images/pano.jpg" data-type="equirectangular">Ga Thủ Thiêm (pano.jpg)</option>
+                        <option value="images/pano_svd_RachChiec.JPG" data-type="equirectangular">Sân vận động Rạch Chiếc (pano_svd_RachChiec.JPG)</option>
+                        <option value="images/pano_catlai.JPG" data-type="equirectangular">Nút giao Cát Lái (pano_catlai.JPG)</option>
+                    </optgroup>
+                    <optgroup label="Sơ đồ / Bản đồ 2D (Flat)">
+                        <option value="images/2D/SANBONG.jpg" data-type="flat">Mặt bằng sân bóng (SANBONG.jpg)</option>
+                    </optgroup>
                 </select>
             </div>
 
-            <div class="coords-display">
-                <div class="coords-row">
-                    <span class="coords-label">Pitch (Vĩ độ):</span>
-                    <span class="coords-val" id="pitch-val">-</span>
+            <!-- Chế độ vẽ -->
+            <div class="mode-selector" style="display: flex; gap: 8px; margin-bottom: 14px;">
+                <button id="btn-mode-single" class="mode-btn active" style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.3); background: rgba(0,242,254,0.1); color: #00f2fe; font-weight: 500; font-size: 0.75rem; cursor: pointer; outline: none;">Lấy Điểm Đơn</button>
+                <button id="btn-mode-poly" class="mode-btn" style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: var(--text-muted); font-weight: 500; font-size: 0.75rem; cursor: pointer; outline: none;">Vẽ Đa Giác</button>
+            </div>
+
+            <!-- Bảng hiển thị tọa độ (Cho chế độ lấy điểm đơn) -->
+            <div id="single-panel">
+                <div class="coords-display">
+                    <div class="coords-row">
+                        <span class="coords-label" id="pitch-label">Pitch (Vĩ độ):</span>
+                        <span class="coords-val" id="pitch-val">-</span>
+                    </div>
+                    <div class="coords-row">
+                        <span class="coords-label" id="yaw-label">Yaw (Kinh độ):</span>
+                        <span class="coords-val" id="yaw-val">-</span>
+                    </div>
                 </div>
-                <div class="coords-row">
-                    <span class="coords-label">Yaw (Kinh độ):</span>
-                    <span class="coords-val" id="yaw-val">-</span>
+
+                <!-- Lịch sử click -->
+                <div class="history-section">
+                    <div class="history-title">Lịch sử nhấp đúp</div>
+                    <ul class="history-list" id="history-list">
+                        <li style="color: var(--text-muted); border-left: none; justify-content: center; background: none;">Chưa có lịch sử tọa độ</li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Lịch sử click -->
-            <div class="history-section">
-                <div class="history-title">Lịch sử nhấp đúp</div>
-                <ul class="history-list" id="history-list">
-                    <li style="color: var(--text-muted); border-left: none; justify-content: center; background: none;">Chưa có lịch sử tọa độ</li>
-                </ul>
+            <!-- Bảng điều khiển Đa giác (Mặc định ẩn) -->
+            <div id="poly-panel" style="display: none; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Dữ liệu đa giác</div>
+                <textarea id="poly-json" readonly style="width: 100%; height: 110px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #00f2fe; font-family: monospace; font-size: 0.75rem; padding: 8px; resize: none; outline: none; margin-bottom: 10px;"></textarea>
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <button id="btn-undo-poly" style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: var(--text-light); font-size: 0.75rem; cursor: pointer; transition: var(--transition-smooth); outline: none;">Xóa điểm cuối</button>
+                    <button id="btn-clear-poly" style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,8,68,0.3); background: rgba(255,8,68,0.05); color: #ff0844; font-size: 0.75rem; cursor: pointer; transition: var(--transition-smooth); outline: none;">Xóa sạch</button>
+                </div>
+                <button id="btn-copy-poly" style="width: 100%; padding: 10px; border-radius: 8px; border: none; background: var(--primary-gradient); color: #0b0f19; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: var(--transition-smooth); outline: none;">Sao Chép JSON Đa Giác</button>
             </div>
         </div>
 
         <!-- Trình xem ảnh Pannellum -->
         <div id="viewer"></div>
+
+        <!-- Lớp SVG vẽ đa giác phủ lên trên -->
+        <svg id="svg-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50;">
+            <polygon id="svg-poly" fill="rgba(0, 242, 254, 0.2)" stroke="#00f2fe" stroke-width="2.5" stroke-dasharray="6, 4" style="display: none; filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.6));" />
+        </svg>
+
+        <!-- Trình xem sơ đồ 2D (Cho ảnh phẳng) -->
+        <div id="viewer-2d" style="display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; overflow: hidden; background: #0b0f19; cursor: grab; z-index: 40;">
+            <img id="img-2d" style="position: absolute; top: 0; left: 0; transform-origin: 0 0; user-drag: none; -webkit-user-drag: none; pointer-events: none;" src="" />
+            <!-- Lớp SVG vẽ đa giác 2D phủ lên trên -->
+            <svg id="svg-overlay-2d" style="position: absolute; top: 0; left: 0; transform-origin: 0 0; pointer-events: none; z-index: 50;">
+                <polygon id="svg-poly-2d" fill="rgba(0, 242, 254, 0.2)" stroke="#00f2fe" stroke-width="2.5" stroke-dasharray="6, 4" style="display: none; filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.6));" />
+                <g id="svg-markers-2d"></g>
+            </svg>
+        </div>
 
         <!-- Toast sao chép -->
         <div class="toast-notification" id="toast">
@@ -293,75 +348,513 @@
 
     <script>
         let viewer;
+        let isPolyMode = false;
+        let polygonPoints = [];
+        let clickHistory = [];
 
-        // Hàm khởi tạo Viewer với ảnh chỉ định
-        function initViewer(panoPath) {
-            if (viewer) {
-                viewer.destroy(); // Giải phóng bộ nhớ WebGL của viewer cũ trước khi tạo mới
-            }
-            viewer = pannellum.viewer('viewer', {
-                "type": "equirectangular",
-                "panorama": panoPath,
-                "autoLoad": true,
-                "autoRotate": 0, // Không tự động xoay để dễ xác định tọa độ
-                "yaw": 0,
-                "pitch": 0,
-                "hfov": 100
-            });
-        }
+        // 2D Viewer State
+        let is2DMode = false;
+        let scale = 1;
+        let translateX = 0;
+        let translateY = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
 
-        // Khởi tạo lần đầu tiên với ảnh mặc định
-        initViewer("images/pano.jpg");
-
-        // Lắng nghe sự kiện thay đổi hình ảnh của Dropdown
-        const sceneSelect = document.getElementById('scene-select');
-        sceneSelect.addEventListener('change', (e) => {
-            initViewer(e.target.value);
-        });
-
+        // Lấy các phần tử DOM
         const viewerContainer = document.getElementById('viewer');
         const pitchVal = document.getElementById('pitch-val');
         const yawVal = document.getElementById('yaw-val');
         const historyList = document.getElementById('history-list');
         const toast = document.getElementById('toast');
         const toastText = document.getElementById('toast-text');
+        
+        const btnModeSingle = document.getElementById('btn-mode-single');
+        const btnModePoly = document.getElementById('btn-mode-poly');
+        const singlePanel = document.getElementById('single-panel');
+        const polyPanel = document.getElementById('poly-panel');
+        const polyJson = document.getElementById('poly-json');
+        
+        const btnUndoPoly = document.getElementById('btn-undo-poly');
+        const btnClearPoly = document.getElementById('btn-clear-poly');
+        const btnCopyPoly = document.getElementById('btn-copy-poly');
+        const badgeStep = document.getElementById('badge-step');
 
-        let clickHistory = [];
+        const viewer2D = document.getElementById('viewer-2d');
+        const img2D = document.getElementById('img-2d');
+        const svgOverlay2D = document.getElementById('svg-overlay-2d');
+        const svgPoly2D = document.getElementById('svg-poly-2d');
+        const svgMarkers2D = document.getElementById('svg-markers-2d');
 
-        // Lắng nghe sự kiện nhấp đúp (Double click) trên container của Pannellum
+        // Hàm khởi tạo Viewer với ảnh và kiểu loại cụ thể (Hỗ trợ equirectangular hoặc flat)
+        function initViewer(panoPath, imgType = "equirectangular") {
+            // Xóa đa giác cũ khi đổi cảnh để tránh lỗi render
+            clearPolygon();
+            
+            if (viewer) {
+                viewer.destroy(); // Giải phóng bộ nhớ WebGL của viewer cũ trước khi tạo mới
+                viewer = null;
+            }
+            
+            if (imgType === "flat") {
+                is2DMode = true;
+                viewerContainer.style.display = 'none';
+                document.getElementById('svg-overlay').style.display = 'none';
+                viewer2D.style.display = 'block';
+                
+                // Load the image source
+                img2D.src = panoPath;
+                
+                // Reset zoom and position on load
+                img2D.onload = function() {
+                    const containerWidth = viewer2D.clientWidth;
+                    const containerHeight = viewer2D.clientHeight;
+                    const imgWidth = img2D.naturalWidth;
+                    const imgHeight = img2D.naturalHeight;
+                    
+                    img2D.style.width = imgWidth + 'px';
+                    img2D.style.height = imgHeight + 'px';
+                    
+                    svgOverlay2D.style.width = imgWidth + 'px';
+                    svgOverlay2D.style.height = imgHeight + 'px';
+                    svgOverlay2D.setAttribute('viewBox', `0 0 ${imgWidth} ${imgHeight}`);
+                    
+                    // Center and fit
+                    const scaleX = containerWidth / imgWidth;
+                    const scaleY = containerHeight / imgHeight;
+                    scale = Math.min(scaleX, scaleY) * 0.8;
+                    if (scale > 1) scale = 1;
+                    
+                    translateX = (containerWidth - imgWidth * scale) / 2;
+                    translateY = (containerHeight - imgHeight * scale) / 2;
+                    
+                    update2DTransform();
+                };
+                
+                // Update labels
+                document.getElementById('pitch-label').innerText = "X (Pixel):";
+                document.getElementById('yaw-label').innerText = "Y (Pixel):";
+                pitchVal.innerText = "-";
+                yawVal.innerText = "-";
+            } else {
+                is2DMode = false;
+                viewer2D.style.display = 'none';
+                viewerContainer.style.display = 'block';
+                document.getElementById('svg-overlay').style.display = 'block';
+                
+                // Các tham số cấu hình cho ảnh 360
+                const viewerConfig = {
+                    "type": "equirectangular",
+                    "panorama": panoPath,
+                    "autoLoad": true,
+                    "autoRotate": 0,
+                    "yaw": 0,
+                    "pitch": 0,
+                    "hfov": 100
+                };
+                
+                viewer = pannellum.viewer('viewer', viewerConfig);
+                
+                // Update labels
+                document.getElementById('pitch-label').innerText = "Pitch (Vĩ độ):";
+                document.getElementById('yaw-label').innerText = "Yaw (Kinh độ):";
+                pitchVal.innerText = "-";
+                yawVal.innerText = "-";
+            }
+
+            // Clear history when switching images
+            clickHistory = [];
+            historyList.innerHTML = '<li style="color: var(--text-muted); border-left: none; justify-content: center; background: none;">Chưa có lịch sử tọa độ</li>';
+        }
+
+        // Khởi tạo lần đầu tiên với ảnh mặc định (Ảnh 360 Ga Thủ Thiêm)
+        initViewer("images/pano.jpg", "equirectangular");
+
+        // Lắng nghe sự kiện thay đổi hình ảnh của Dropdown
+        const sceneSelect = document.getElementById('scene-select');
+        sceneSelect.addEventListener('change', (e) => {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            const imgType = selectedOption.getAttribute('data-type') || "equirectangular";
+            initViewer(e.target.value, imgType);
+        });
+
+        // Xử lý chuyển đổi chế độ
+        btnModeSingle.addEventListener('click', () => {
+            isPolyMode = false;
+            btnModeSingle.classList.add('active');
+            btnModePoly.classList.remove('active');
+            singlePanel.style.display = 'block';
+            polyPanel.style.display = 'none';
+            badgeStep.innerText = "Double Click Utility";
+            clearPolygon();
+        });
+
+        btnModePoly.addEventListener('click', () => {
+            isPolyMode = true;
+            btnModePoly.classList.add('active');
+            btnModeSingle.classList.remove('active');
+            singlePanel.style.display = 'none';
+            polyPanel.style.display = 'block';
+            badgeStep.innerText = "Polygon Drawing Mode";
+            updatePolyJson();
+        });
+
+        // Lắng nghe sự kiện nhấp đúp (Double click) trên container của Pannellum (cho 3D)
         viewerContainer.addEventListener('dblclick', (event) => {
+            if (is2DMode) return;
+            
             // Chuyển đổi tọa độ trỏ chuột trong sự kiện thành tọa độ pitch/yaw của ảnh 360
             const coords = viewer.mouseEventToCoords(event);
             
             // Nếu click nằm ngoài vùng ảnh WebGL của Pannellum, coords sẽ trả về null
             if (!coords) return;
 
-            const pitch = coords[0];
-            const yaw = coords[1];
+            const pitch = parseFloat(coords[0].toFixed(4));
+            const yaw = parseFloat(coords[1].toFixed(4));
 
-            // Làm tròn tọa độ 4 chữ số thập phân
-            const formattedPitch = pitch.toFixed(4);
-            const formattedYaw = yaw.toFixed(4);
+            if (!isPolyMode) {
+                // CHẾ ĐỘ LẤY ĐIỂM ĐƠN
+                console.log(`[Single Point] Pitch: ${pitch}, Yaw: ${yaw}`);
 
-            // 1. In ra màn hình console theo yêu cầu
-            console.log(`[Pannellum Coords] Pitch: ${formattedPitch}, Yaw: ${formattedYaw}`);
+                pitchVal.innerText = pitch;
+                yawVal.innerText = yaw;
 
-            // 2. Cập nhật lên giao diện điều khiển
-            pitchVal.innerText = formattedPitch;
-            yawVal.innerText = formattedYaw;
+                const configString = `"pitch": ${pitch}, "yaw": ${yaw}`;
+                navigator.clipboard.writeText(configString).then(() => {
+                    showToast(`Đã sao chép: pitch: ${pitch}, yaw: ${yaw}`);
+                }).catch(err => {
+                    alert(`Tọa độ nhấp đúp:\nPitch: ${pitch}\nYaw: ${yaw}`);
+                });
 
-            // 3. Tự động sao chép vào Clipboard định dạng JSON cấu hình hotspot
-            const configString = `"pitch": ${formattedPitch}, "yaw": ${formattedYaw}`;
-            navigator.clipboard.writeText(configString).then(() => {
-                showToast(`Đã sao chép: pitch: ${formattedPitch}, yaw: ${formattedYaw}`);
-            }).catch(err => {
-                // Fallback alert nếu trình duyệt chặn quyền clipboard
-                alert(`Tọa độ nhấp đúp:\nPitch: ${formattedPitch}\nYaw: ${formattedYaw}`);
-            });
-
-            // 4. Thêm vào bảng lịch sử
-            addHistory(formattedPitch, formattedYaw);
+                addHistory(pitch, yaw);
+            } else {
+                // CHẾ ĐỘ VẼ ĐA GIÁC
+                addPolygonPoint(pitch, yaw);
+            }
         });
+
+        // Lắng nghe sự kiện nhấp đúp (Double click) trên container 2D
+        viewer2D.addEventListener('dblclick', (event) => {
+            if (!is2DMode) return;
+            
+            const rect = img2D.getBoundingClientRect();
+            const originalX = Math.round((event.clientX - rect.left) / scale);
+            const originalY = Math.round((event.clientY - rect.top) / scale);
+            
+            // Validate coordinates inside image bounds
+            if (originalX < 0 || originalX > img2D.naturalWidth || originalY < 0 || originalY > img2D.naturalHeight) {
+                return;
+            }
+            
+            if (!isPolyMode) {
+                console.log(`[2D Single Point] X: ${originalX}, Y: ${originalY}`);
+                
+                pitchVal.innerText = originalX;
+                yawVal.innerText = originalY;
+                
+                const configString = `[${originalX}, ${originalY}]`;
+                navigator.clipboard.writeText(configString).then(() => {
+                    showToast(`Đã sao chép: [${originalX}, ${originalY}]`);
+                }).catch(err => {
+                    alert(`Tọa độ nhấp đúp:\nX: ${originalX}\nY: ${originalY}`);
+                });
+                
+                addHistory2D(originalX, originalY);
+            } else {
+                addPolygonPoint2D(originalX, originalY);
+            }
+        });
+
+        // Event Listeners for 2D Drag-to-Pan
+        viewer2D.addEventListener('mousedown', (e) => {
+            if (!is2DMode) return;
+            if (e.button !== 0) return; // Left click only
+            isDragging = true;
+            viewer2D.style.cursor = 'grabbing';
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+        });
+
+        viewer2D.addEventListener('mousemove', (e) => {
+            if (!is2DMode || !isDragging) return;
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            update2DTransform();
+        });
+
+        const stopDragging = () => {
+            if (isDragging) {
+                isDragging = false;
+                viewer2D.style.cursor = 'grab';
+            }
+        };
+        viewer2D.addEventListener('mouseup', stopDragging);
+        viewer2D.addEventListener('mouseleave', stopDragging);
+
+        // Event Listener for 2D Wheel Zoom (Centered at Mouse Cursor)
+        viewer2D.addEventListener('wheel', (e) => {
+            if (!is2DMode) return;
+            e.preventDefault();
+            
+            const containerRect = viewer2D.getBoundingClientRect();
+            const mx = e.clientX - containerRect.left;
+            const my = e.clientY - containerRect.top;
+            
+            const zoomFactor = 1.1;
+            let newScale = scale;
+            if (e.deltaY < 0) {
+                newScale = scale * zoomFactor; // Zoom in
+            } else {
+                newScale = scale / zoomFactor; // Zoom out
+            }
+            
+            // Limit scale between 0.1 and 15
+            newScale = Math.max(0.1, Math.min(15, newScale));
+            
+            // Adjust translation to keep the zoom centered under mouse cursor
+            translateX = mx - (mx - translateX) * (newScale / scale);
+            translateY = my - (my - translateY) * (newScale / scale);
+            scale = newScale;
+            
+            update2DTransform();
+        }, { passive: false });
+
+        function update2DTransform() {
+            img2D.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+            svgOverlay2D.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+            
+            // Update existing markers size so they remain visually constant
+            update2DMarkers();
+        }
+
+        function update2DMarkers() {
+            const circles = svgMarkers2D.querySelectorAll('circle');
+            const texts = svgMarkers2D.querySelectorAll('text');
+            
+            const r = 9 / scale;
+            const sw = 2 / scale;
+            const fs = 10 / scale;
+            
+            circles.forEach(circle => {
+                circle.setAttribute('r', r);
+                circle.setAttribute('stroke-width', sw);
+            });
+            
+            texts.forEach(text => {
+                text.setAttribute('font-size', `${fs}px`);
+            });
+        }
+
+        // Hàm thêm điểm vào đa giác 3D
+        function addPolygonPoint(pitch, yaw) {
+            const pointId = 'poly-point-' + Date.now();
+            const index = polygonPoints.length;
+            
+            const point = {
+                id: pointId,
+                pitch: pitch,
+                yaw: yaw,
+                x: 0,
+                y: 0,
+                visible: false
+            };
+            
+            polygonPoints.push(point);
+            
+            // Khai báo thêm một điểm hotspot dạng tròn vào Pannellum để hiển thị
+            viewer.addHotSpot({
+                id: pointId,
+                pitch: pitch,
+                yaw: yaw,
+                type: 'info',
+                cssClass: 'poly-dot-marker',
+                createTooltipFunc: myCustomTooltipFunc,
+                createTooltipArgs: { id: pointId, index: index }
+            });
+            
+            updatePolyJson();
+            showToast(`Đã thêm Điểm ${index + 1}: pitch: ${pitch}, yaw: ${yaw}`);
+        }
+
+        // Hàm thêm điểm vào đa giác 2D
+        function addPolygonPoint2D(x, y) {
+            const pointId = 'poly-point-' + Date.now();
+            const index = polygonPoints.length;
+            
+            const point = {
+                id: pointId,
+                x: x,
+                y: y
+            };
+            
+            polygonPoints.push(point);
+            
+            render2DPolygon();
+            updatePolyJson();
+            showToast(`Đã thêm Điểm ${index + 1}: [${x}, ${y}]`);
+        }
+
+        // Vẽ và cập nhật đa giác cùng markers trên 2D SVG
+        function render2DPolygon() {
+            if (polygonPoints.length > 1) {
+                const pointsStr = polygonPoints.map(pt => `${pt.x},${pt.y}`).join(' ');
+                svgPoly2D.setAttribute('points', pointsStr);
+                svgPoly2D.style.display = 'block';
+            } else {
+                svgPoly2D.style.display = 'none';
+            }
+            
+            // Redraw markers
+            svgMarkers2D.innerHTML = '';
+            polygonPoints.forEach((pt, index) => {
+                const r = 9 / scale;
+                const sw = 2 / scale;
+                const fs = 10 / scale;
+                
+                // Circle
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', pt.x);
+                circle.setAttribute('cy', pt.y);
+                circle.setAttribute('r', r);
+                circle.setAttribute('fill', '#00f2fe');
+                circle.setAttribute('stroke', '#ffffff');
+                circle.setAttribute('stroke-width', sw);
+                svgMarkers2D.appendChild(circle);
+                
+                // Text
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', pt.x);
+                text.setAttribute('y', pt.y);
+                text.setAttribute('fill', '#0b0f19');
+                text.setAttribute('font-size', `${fs}px`);
+                text.setAttribute('font-family', 'sans-serif');
+                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'central');
+                text.textContent = index + 1;
+                svgMarkers2D.appendChild(text);
+            });
+        }
+
+        // Custom Tooltip để tạo nút điểm đa giác đẹp mắt (cho 3D)
+        function myCustomTooltipFunc(hotSpotDiv, args) {
+            hotSpotDiv.setAttribute('data-point-id', args.id);
+            hotSpotDiv.innerText = args.index + 1;
+            hotSpotDiv.style.color = '#0b0f19';
+            hotSpotDiv.style.background = '#00f2fe';
+            hotSpotDiv.style.border = '2px solid #fff';
+            hotSpotDiv.style.borderRadius = '50%';
+            hotSpotDiv.style.width = '18px';
+            hotSpotDiv.style.height = '18px';
+            hotSpotDiv.style.fontSize = '10px';
+            hotSpotDiv.style.fontWeight = 'bold';
+            hotSpotDiv.style.display = 'flex';
+            hotSpotDiv.style.alignItems = 'center';
+            hotSpotDiv.style.justifyContent = 'center';
+            hotSpotDiv.style.boxShadow = '0 0 8px rgba(0, 242, 254, 0.8)';
+            hotSpotDiv.style.cursor = 'pointer';
+        }
+
+        // Hàm cập nhật JSON của đa giác hiển thị trên khung textarea
+        function updatePolyJson() {
+            if (polygonPoints.length === 0) {
+                polyJson.value = '[]';
+                return;
+            }
+            
+            if (is2DMode) {
+                const coordsArray = polygonPoints.map(pt => `  [${Math.round(pt.x)}, ${Math.round(pt.y)}]`);
+                polyJson.value = `[\n${coordsArray.join(',\n')}\n]`;
+            } else {
+                const coordsArray = polygonPoints.map(pt => `  [${pt.pitch.toFixed(4)}, ${pt.yaw.toFixed(4)}]`);
+                polyJson.value = `[\n${coordsArray.join(',\n')}\n]`;
+            }
+        }
+
+        // Xử lý nút Undo (Xóa điểm cuối cùng)
+        btnUndoPoly.addEventListener('click', () => {
+            if (polygonPoints.length === 0) return;
+            
+            const lastPoint = polygonPoints.pop();
+            if (!is2DMode) {
+                if (viewer) viewer.removeHotSpot(lastPoint.id);
+            } else {
+                render2DPolygon();
+            }
+            
+            updatePolyJson();
+            showToast('Đã xóa điểm cuối cùng');
+        });
+
+        // Xử lý nút Xóa sạch
+        btnClearPoly.addEventListener('click', () => {
+            clearPolygon();
+            showToast('Đã xóa sạch đa giác');
+        });
+
+        // Xử lý sao chép JSON đa giác
+        btnCopyPoly.addEventListener('click', () => {
+            if (polygonPoints.length === 0) {
+                showToast('Chưa có điểm nào để sao chép!');
+                return;
+            }
+            
+            navigator.clipboard.writeText(polyJson.value).then(() => {
+                showToast('Đã sao chép JSON đa giác vào Clipboard!');
+            });
+        });
+
+        // Hàm xóa sạch các điểm hotspot đa giác
+        function clearPolygon() {
+            if (!is2DMode) {
+                polygonPoints.forEach(pt => {
+                    if (viewer) {
+                        viewer.removeHotSpot(pt.id);
+                    }
+                });
+            } else {
+                svgPoly2D.style.display = 'none';
+                svgMarkers2D.innerHTML = '';
+            }
+            polygonPoints = [];
+            updatePolyJson();
+        }
+
+        // Vòng lặp đồng bộ hóa vị trí vẽ SVG Overlay theo chuyển động WebGL (chỉ chạy cho 3D)
+        function updateOverlay() {
+            if (viewer && !is2DMode) {
+                const container = document.getElementById('viewer');
+                const containerRect = container.getBoundingClientRect();
+                
+                // Cập nhật vị trí điểm màn hình
+                polygonPoints.forEach(pt => {
+                    const div = document.querySelector(`[data-point-id="${pt.id}"]`);
+                    if (div) {
+                        const rect = div.getBoundingClientRect();
+                        pt.x = rect.left + rect.width / 2 - containerRect.left;
+                        pt.y = rect.top + rect.height / 2 - containerRect.top;
+                        pt.visible = true;
+                    } else {
+                        pt.visible = false;
+                    }
+                });
+
+                const visiblePoints = polygonPoints.filter(pt => pt.visible);
+                const svgPoly = document.getElementById('svg-poly');
+                
+                if (visiblePoints.length > 1) {
+                    const pointsStr = visiblePoints.map(pt => `${pt.x},${pt.y}`).join(' ');
+                    svgPoly.setAttribute('points', pointsStr);
+                    svgPoly.style.display = 'block';
+                } else {
+                    svgPoly.style.display = 'none';
+                }
+            }
+            requestAnimationFrame(updateOverlay);
+        }
+
+        // Khởi động vòng lặp đồng bộ SVG overlay
+        updateOverlay();
 
         // Hàm hiển thị Toast thông báo
         function showToast(text) {
@@ -374,7 +867,7 @@
             }, 2000);
         }
 
-        // Hàm ghi lại lịch sử click
+        // Hàm ghi lại lịch sử click (Cho 3D)
         function addHistory(pitch, yaw) {
             clickHistory.unshift({ pitch, yaw }); // Đưa lên đầu danh sách
             
@@ -395,6 +888,30 @@
                     const configString = `"pitch": ${item.pitch}, "yaw": ${item.yaw}`;
                     navigator.clipboard.writeText(configString).then(() => {
                         showToast(`Sao chép lại: ${item.pitch}, ${item.yaw}`);
+                    });
+                });
+                historyList.appendChild(li);
+            });
+        }
+
+        // Hàm ghi lại lịch sử click (Cho 2D)
+        function addHistory2D(x, y) {
+            clickHistory.unshift({ x, y });
+            
+            if (clickHistory.length > 10) {
+                clickHistory.pop();
+            }
+
+            historyList.innerHTML = '';
+            clickHistory.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>X: ${item.x}</span><span>Y: ${item.y}</span>`;
+                li.style.cursor = 'pointer';
+                li.title = "Nhấp để sao chép lại tọa độ này";
+                li.addEventListener('click', () => {
+                    const configString = `[${item.x}, ${item.y}]`;
+                    navigator.clipboard.writeText(configString).then(() => {
+                        showToast(`Sao chép lại: [${item.x}, ${item.y}]`);
                     });
                 });
                 historyList.appendChild(li);

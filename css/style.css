@@ -618,3 +618,195 @@ body, html {
         transform: translateY(-8px);
     }
 }
+
+/* Điểm đỉnh đa giác ẩn phục vụ định vị vẽ SVG */
+.poly-vertex-marker {
+    width: 0px !important;
+    height: 0px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Custom Hotspot: Icon Sơ đồ 2D */
+.custom-map-icon {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-map-icon::after {
+    content: '🗺️';
+    font-size: 26px;
+    display: inline-block;
+    animation: bounce 2s infinite ease-in-out;
+    transition: var(--transition-smooth);
+    filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.6));
+}
+
+.custom-map-icon:hover::after {
+    font-size: 32px;
+}
+
+.custom-map-icon span {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+    background: rgba(15, 22, 36, 0.85) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: var(--text-light) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+    position: absolute;
+    bottom: 38px;
+    left: 50%;
+    transform: translateX(-50%) !important;
+    white-space: nowrap;
+    margin: 0 !important;
+    transition: var(--transition-smooth);
+}
+
+.custom-map-icon span::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: rgba(15, 22, 36, 0.85) transparent;
+    display: block;
+    width: 0;
+}
+
+.custom-map-icon:hover span {
+    background: rgba(0, 242, 254, 0.15) !important;
+    border-color: rgba(0, 242, 254, 0.4) !important;
+    color: #00f2fe !important;
+}
+
+.custom-map-icon:hover span::after {
+    border-color: rgba(15, 22, 36, 0.85) transparent !important;
+}
+
+/* ==========================================================================
+   9. Video Modal Popup Styles (Glassmorphism & Responsive)
+   ========================================================================== */
+.video-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    display: none; /* Mặc định ẩn */
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.video-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 15, 25, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.video-modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 960px;
+    aspect-ratio: 16/9;
+    border-radius: 16px;
+    overflow: visible;
+    background: #000;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    z-index: 1001;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.video-modal.show .video-modal-content {
+    transform: scale(1);
+}
+
+/* Nút đóng nổi bật ở góc trên bên phải */
+.video-modal-close {
+    position: absolute;
+    top: -48px;
+    right: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    color: var(--text-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+    z-index: 1002;
+    outline: none;
+}
+
+.video-modal-close:hover {
+    background: var(--accent-gradient);
+    color: #fff;
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 8, 68, 0.5);
+    border-color: transparent;
+}
+
+.video-modal-close:active {
+    transform: scale(0.9);
+}
+
+/* Container responsive tỷ lệ 16:9 cho Iframe */
+.video-responsive-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.video-responsive-container iframe {
+    width: 100%;
+    height: 100%;
+}
+
+/* Căn chỉnh lại vị trí nút đóng trên màn hình di động nhỏ */
+@media (max-width: 768px) {
+    .video-modal-content {
+        width: 95%;
+    }
+    .video-modal-close {
+        top: -42px;
+        width: 32px;
+        height: 32px;
+    }
+}

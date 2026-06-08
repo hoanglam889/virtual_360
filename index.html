@@ -29,6 +29,25 @@
         <!-- 2. Khung chứa Pannellum Viewer -->
         <div id="panorama-viewer"></div>
 
+        <!-- Trình xem sơ đồ 2D (Cho ảnh phẳng) -->
+        <div id="viewer-2d" style="display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; overflow: hidden; background: #0b0f19; cursor: grab; z-index: 4;">
+            <img id="img-2d" style="position: absolute; top: 0; left: 0; transform-origin: 0 0; user-drag: none; -webkit-user-drag: none; pointer-events: none;" src="" />
+            <!-- Lớp SVG vẽ đa giác 2D phủ lên trên -->
+            <svg id="svg-overlay-2d" style="position: absolute; top: 0; left: 0; transform-origin: 0 0; pointer-events: none; z-index: 5;">
+                <polygon id="poly-san-bong" fill="rgba(0, 242, 254, 0.15)" stroke="#00f2fe" stroke-width="2.5" stroke-dasharray="6, 4" style="pointer-events: auto; cursor: pointer; transition: fill 0.3s, stroke 0.3s, stroke-width 0.3s, filter 0.3s; filter: drop-shadow(0 0 4px rgba(0, 242, 254, 0.6));" />
+            </svg>
+        </div>
+
+        <!-- Lớp SVG vẽ đa giác highlight dự án phủ lên trên -->
+        <svg id="tour-svg-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; display: none;">
+            <polygon id="poly-rach-chiec" fill="rgba(255, 8, 68, 0.05)" stroke="rgba(255, 8, 68, 0.5)" stroke-width="2" stroke-dasharray="6, 4" style="pointer-events: auto; cursor: pointer; transition: fill 0.3s, stroke 0.3s, stroke-width 0.3s, filter 0.3s; filter: drop-shadow(0 0 3px rgba(255, 8, 68, 0.3));" />
+        </svg>
+
+        <!-- Tooltip động khi di chuột vào đa giác -->
+        <div id="poly-tooltip" style="position: absolute; display: none; background: rgba(15, 22, 36, 0.9); border: 1px solid #ff0844; color: #f8fafc; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; padding: 6px 12px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); pointer-events: none; z-index: 100; transform: translate(-50%, -100%); opacity: 0; transition: opacity 0.2s ease;">
+            Mặt bằng Rạch Chiếc
+        </div>
+
         <!-- 3. Header & Info Overlay (Có tính năng đóng/mở linh hoạt) -->
         <div class="header-overlay" id="header-overlay">
             <!-- Nút đóng mở thông tin -->
@@ -105,12 +124,28 @@
             </button>
         </div>
 
+        <!-- 5. Video Modal Popup -->
+        <div id="video-modal" class="video-modal">
+            <div class="video-modal-backdrop"></div>
+            <div class="video-modal-content">
+                <button class="video-modal-close" id="video-modal-close" data-tooltip="Đóng video">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="video-responsive-container">
+                    <iframe id="video-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- Nhúng thư viện Pannellum JS từ CDN chính thức -->
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
     <!-- Nhúng Script JS điều khiển đã được tách riêng (Thêm query param để tránh cache trình duyệt) -->
-    <script src="js/script.js?v=2.7" defer></script>
+    <script src="js/script.js?v=2.8" defer></script>
 </body>
 </html>
