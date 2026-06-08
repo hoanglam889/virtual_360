@@ -520,7 +520,7 @@ body, html {
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: bounce 2s infinite ease-in-out;
+    /* Không dùng transform/animation ở đây để tránh đè lên vị trí định vị của Pannellum */
 }
 
 /* Tạo mũi tên trỏ xuống màu đỏ-cam rực rỡ có bóng phát sáng */
@@ -529,13 +529,15 @@ body, html {
     font-size: 26px;
     color: #ff3366; /* Màu đỏ hồng rực rỡ */
     text-shadow: 0 2px 12px rgba(255, 51, 102, 0.7), 0 0 2px rgba(0, 0, 0, 0.8);
+    display: inline-block;
+    animation: bounce 2s infinite ease-in-out; /* Chạy animation nảy trên pseudo-element */
     transition: var(--transition-smooth);
 }
 
 .custom-arrow:hover::after {
     color: #00f2fe; /* Khi di chuột chuyển sang màu neon cyan */
     text-shadow: 0 2px 12px rgba(0, 242, 254, 0.8);
-    transform: scale(1.2);
+    font-size: 32px; /* Tăng kích thước bằng font-size thay vì transform: scale() để tránh xung đột hoạt họa */
 }
 
 /* Hiệu ứng nảy (Bounce Animation) */
