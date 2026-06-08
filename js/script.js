@@ -18,8 +18,8 @@ const viewer = pannellum.viewer('panorama-viewer', {
     "maxHfov": 120,
     "hotSpots": [
         {
-            "pitch": -0.6452,
-            "yaw": 144.5234,
+            "pitch": -1.2864,
+            "yaw": 156.6523,
             "type": "info",
             "text": "Khu liên hợp TDTT Rạch Chiếc",
             "cssClass": "custom-arrow"
