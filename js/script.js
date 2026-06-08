@@ -189,6 +189,13 @@ viewer.on('load', function() {
             });
         }
     }
+
+    // Đồng bộ trạng thái tự động xoay của cảnh mới với trạng thái nút bấm hiện tại
+    if (isAutoRotating) {
+        viewer.startAutoRotate(autoRotateSpeed);
+    } else {
+        viewer.stopAutoRotate();
+    }
 });
 
 // Sự kiện Click bật/tắt nhạc thuyết minh
