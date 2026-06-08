@@ -3,35 +3,97 @@ let isAutoRotating = true;
 const autoRotateSpeed = -2; // Tốc độ xoay tự động (giá trị âm: xoay từ trái qua phải)
 
 /* ==========================================================================
-   Khởi tạo Pannellum Viewer
+   Khởi tạo Pannellum Viewer với Multi-scenes (Đa cảnh)
    ========================================================================== */
 const viewer = pannellum.viewer('panorama-viewer', {
-    "type": "equirectangular",
-    "panorama": "images/pano.jpg",
-    "autoLoad": true,
-    "showControls": false, 
-    "autoRotate": autoRotateSpeed,
-    "yaw": 0,
-    "pitch": 0,
-    "hfov": 100,
-    "minHfov": 50,
-    "maxHfov": 120,
-    "hotSpots": [
-        {
-            "pitch": -1.2864,
-            "yaw": 156.6523,
-            "type": "info",
-            "text": "Khu liên hợp TDTT Rạch Chiếc",
-            "cssClass": "custom-arrow"
+    "default": {
+        "firstScene": "ga_thu_thiem",
+        "sceneFadeDuration": 1000, // Hiệu ứng chuyển cảnh mờ dần mượt mà 1 giây
+        "author": "Virtual 360"
+    },
+    
+    "scenes": {
+        // Cảnh 1: Ga Thủ Thiêm (Cảnh chính mặc định)
+        "ga_thu_thiem": {
+            "title": "Ga Thủ Thiêm",
+            "type": "equirectangular",
+            "panorama": "images/pano.jpg",
+            "autoLoad": true,
+            "showControls": false, 
+            "autoRotate": autoRotateSpeed,
+            "yaw": 0,
+            "pitch": 0,
+            "hfov": 100,
+            "minHfov": 50,
+            "maxHfov": 120,
+            "hotSpots": [
+                {
+                    "pitch": -1.2864,
+                    "yaw": 156.6523,
+                    "type": "scene",
+                    "sceneId": "rach_chiec",
+                    "text": "Khu liên hợp TDTT Rạch Chiếc",
+                    "cssClass": "custom-arrow"
+                },
+                {
+                    "pitch": -2.3097,
+                    "yaw": 124.4251,
+                    "type": "scene",
+                    "sceneId": "cat_lai",
+                    "text": "Nút giao Cát Lái",
+                    "cssClass": "custom-arrow"
+                }
+            ]
         },
-        {
-            "pitch": -2.3097,
-            "yaw": 124.4251,
-            "type": "info",
-            "text": "Nút giao Cát Lái",
-            "cssClass": "custom-arrow"
+        
+        // Cảnh 2: Khu liên hợp TDTT Rạch Chiếc
+        "rach_chiec": {
+            "title": "Khu liên hợp TDTT Rạch Chiếc",
+            "type": "equirectangular",
+            "panorama": "images/pano_svd_RachChiec.JPG",
+            "autoLoad": true,
+            "showControls": false,
+            "yaw": 0,
+            "pitch": 0,
+            "hfov": 100,
+            "minHfov": 50,
+            "maxHfov": 120,
+            "hotSpots": [
+                {
+                    "pitch": 0,
+                    "yaw": 180,
+                    "type": "scene",
+                    "sceneId": "ga_thu_thiem",
+                    "text": "Quay về Ga Thủ Thiêm",
+                    "cssClass": "custom-arrow"
+                }
+            ]
+        },
+        
+        // Cảnh 3: Nút giao Cát Lái
+        "cat_lai": {
+            "title": "Nút giao Cát Lái",
+            "type": "equirectangular",
+            "panorama": "images/pano_catlai.JPG",
+            "autoLoad": true,
+            "showControls": false,
+            "yaw": 0,
+            "pitch": 0,
+            "hfov": 100,
+            "minHfov": 50,
+            "maxHfov": 120,
+            "hotSpots": [
+                {
+                    "pitch": 0,
+                    "yaw": 180,
+                    "type": "scene",
+                    "sceneId": "ga_thu_thiem",
+                    "text": "Quay về Ga Thủ Thiêm",
+                    "cssClass": "custom-arrow"
+                }
+            ]
         }
-    ]
+    }
 });
 
 // Lấy các phần tử DOM phục vụ tương tác điều khiển
@@ -53,13 +115,11 @@ const instructionText = document.getElementById('instruction-text');
 /* ==========================================
    1. Kiểm tra Thiết bị Di động (Mobile Optimization)
    ========================================== */
-// Nếu mở trên điện thoại (màn hình <= 768px), tự động thu gọn bảng thông tin để tránh che mất hình ảnh 360
 if (window.innerWidth <= 768) {
     headerOverlay.classList.add('collapsed');
     updateToggleIcon();
 }
 
-// Thay đổi dòng text hướng dẫn tùy thuộc vào thiết bị cảm ứng hay máy tính
 if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
     if (instructionText) {
         instructionText.innerText = "Vuốt để xoay / Kéo 2 ngón tay để zoom";
@@ -69,11 +129,14 @@ if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
 /* ==========================================
    2. Xử lý Trạng thái Tải ảnh (Loading)
    ========================================== */
+// Lắng nghe sự kiện load để ẩn màn hình loading lúc tải trang ban đầu
 viewer.on('load', function() {
-    loadingOverlay.style.opacity = '0';
-    setTimeout(() => {
-        loadingOverlay.style.display = 'none';
-    }, 600);
+    if (loadingOverlay.style.display !== 'none') {
+        loadingOverlay.style.opacity = '0';
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+        }, 600);
+    }
 });
 
 /* ==========================================
@@ -146,17 +209,13 @@ document.addEventListener('fullscreenchange', () => {
    6. Tính năng đóng/mở Header Info Panel
    ========================================== */
 infoToggleBtn.addEventListener('click', (e) => {
-    // Ngăn chặn sự kiện click lan xuống WebGL canvas bên dưới
     e.stopPropagation();
-    
     headerOverlay.classList.toggle('collapsed');
     updateToggleIcon();
 });
 
-// Cập nhật SVG Icon cho nút Đóng / Mở Info Panel
 function updateToggleIcon() {
     if (headerOverlay.classList.contains('collapsed')) {
-        // Biểu tượng chữ "i" (Thông tin)
         infoToggleBtn.setAttribute('data-tooltip', 'Hiện thông tin');
         infoToggleIcon.innerHTML = `
             <circle cx="12" cy="12" r="10"></circle>
@@ -164,7 +223,6 @@ function updateToggleIcon() {
             <line x1="12" y1="8" x2="12.01" y2="8"></line>
         `;
     } else {
-        // Biểu tượng dấu "X" (Đóng)
         infoToggleBtn.setAttribute('data-tooltip', 'Ẩn thông tin');
         infoToggleIcon.innerHTML = `
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -178,10 +236,36 @@ function updateToggleIcon() {
    ========================================== */
 if (homeBtn) {
     homeBtn.addEventListener('click', (e) => {
-        // Ngăn chặn sự kiện lan xuống WebGL
         e.stopPropagation();
         
-        // Lia camera quay về góc nhìn mặc định ban đầu mượt mà
-        viewer.lookAt(0, 0, 100, 1000);
+        // Nếu đang ở cảnh khác, tải lại cảnh Ga Thủ Thiêm
+        if (viewer.getScene() !== 'ga_thu_thiem') {
+            viewer.loadScene('ga_thu_thiem');
+        } else {
+            // Nếu đã ở Ga Thủ Thiêm, reset góc nhìn về mặc định mượt mà
+            viewer.lookAt(0, 0, 100, 1000);
+        }
     });
 }
+
+/* ==========================================
+   8. Sự kiện Thay đổi Cảnh (Scene Change Listener)
+   Cập nhật thông tin tiêu đề/mô tả tương ứng với cảnh hiện tại
+   ========================================== */
+viewer.on('scenechange', function(sceneId) {
+    const title = document.querySelector('.header-overlay h1');
+    const desc = document.querySelector('.header-overlay p');
+    
+    if (!title || !desc) return;
+    
+    if (sceneId === 'ga_thu_thiem') {
+        title.innerText = "Virtual Viewer 360°";
+        desc.innerText = "Trình xem ảnh toàn cảnh Panorama sống động và mượt mà tích hợp WebGL.";
+    } else if (sceneId === 'rach_chiec') {
+        title.innerText = "Rạch Chiếc 360°";
+        desc.innerText = "Khu liên hợp Thể dục Thể thao Rạch Chiếc quy hoạch tương lai.";
+    } else if (sceneId === 'cat_lai') {
+        title.innerText = "Cát Lái 360°";
+        desc.innerText = "Nút giao thông Cát Lái - cửa ngõ Đông TP.HCM sầm uất.";
+    }
+});

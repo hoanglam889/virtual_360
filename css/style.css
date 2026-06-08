@@ -540,6 +540,61 @@ body, html {
     font-size: 32px; /* Tăng kích thước bằng font-size thay vì transform: scale() để tránh xung đột hoạt họa */
 }
 
+/* Luôn hiển thị nhãn chữ của hotspot mà không cần trỏ chuột vào */
+.custom-arrow span {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+    
+    /* Giao diện nhãn chữ cao cấp dạng glassmorphism */
+    background: rgba(15, 22, 36, 0.85) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: var(--text-light) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+    
+    /* Căn chỉnh nhãn nằm trên đầu mũi tên */
+    position: absolute;
+    bottom: 38px;
+    left: 50%;
+    transform: translateX(-50%) !important;
+    white-space: nowrap;
+    margin: 0 !important; /* Reset margin mặc định của Pannellum */
+    transition: var(--transition-smooth);
+}
+
+/* Mũi tên nhỏ trỏ xuống dưới nhãn chữ */
+.custom-arrow span::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: rgba(15, 22, 36, 0.85) transparent;
+    display: block;
+    width: 0;
+}
+
+.custom-arrow:hover span {
+    background: rgba(0, 242, 254, 0.15) !important;
+    border-color: rgba(0, 242, 254, 0.4) !important;
+    color: #00f2fe !important;
+}
+
+.custom-arrow:hover span::after {
+    border-color: rgba(0, 242, 254, 0.15) transparent !important; /* Thay đổi màu mũi tên nhãn khi hover */
+    /* Hoặc giữ nguyên màu nền */
+    border-color: rgba(15, 22, 36, 0.85) transparent !important;
+}
+
 /* Hiệu ứng nảy (Bounce Animation) */
 @keyframes bounce {
     0%, 100% {
