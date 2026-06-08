@@ -202,6 +202,34 @@
             color: var(--text-light);
             font-weight: 500;
         }
+
+        .scene-selector-container {
+            margin-bottom: 14px;
+        }
+
+        .scene-select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-family: inherit;
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .scene-select:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.15);
+        }
+
+        .scene-select option {
+            background-color: #0f172a;
+            color: var(--text-light);
+        }
     </style>
 </head>
 <body>
@@ -214,6 +242,16 @@
             <span class="badge-step">Double Click Utility</span>
             <p>Nhấp đúp chuột (Double Click) vào bất kỳ vị trí nào trên ảnh 360 để lấy tọa độ cấu hình Hotspot.</p>
             
+            <!-- Bộ chọn ảnh toàn cảnh -->
+            <div class="scene-selector-container">
+                <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">Chọn hình ảnh 360:</label>
+                <select id="scene-select" class="scene-select">
+                    <option value="images/pano.jpg">Ga Thủ Thiêm (pano.jpg)</option>
+                    <option value="images/pano_svd_RachChiec.JPG">Sân vận động Rạch Chiếc (pano_svd_RachChiec.JPG)</option>
+                    <option value="images/pano_catlai.JPG">Nút giao Cát Lái (pano_catlai.JPG)</option>
+                </select>
+            </div>
+
             <div class="coords-display">
                 <div class="coords-row">
                     <span class="coords-label">Pitch (Vĩ độ):</span>
@@ -254,15 +292,31 @@
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
     <script>
-        // Khởi tạo Pannellum Viewer
-        const viewer = pannellum.viewer('viewer', {
-            "type": "equirectangular",
-            "panorama": "images/pano.jpg",
-            "autoLoad": true,
-            "autoRotate": 0, // Không tự động xoay để dễ xác định tọa độ
-            "yaw": 0,
-            "pitch": 0,
-            "hfov": 100
+        let viewer;
+
+        // Hàm khởi tạo Viewer với ảnh chỉ định
+        function initViewer(panoPath) {
+            if (viewer) {
+                viewer.destroy(); // Giải phóng bộ nhớ WebGL của viewer cũ trước khi tạo mới
+            }
+            viewer = pannellum.viewer('viewer', {
+                "type": "equirectangular",
+                "panorama": panoPath,
+                "autoLoad": true,
+                "autoRotate": 0, // Không tự động xoay để dễ xác định tọa độ
+                "yaw": 0,
+                "pitch": 0,
+                "hfov": 100
+            });
+        }
+
+        // Khởi tạo lần đầu tiên với ảnh mặc định
+        initViewer("images/pano.jpg");
+
+        // Lắng nghe sự kiện thay đổi hình ảnh của Dropdown
+        const sceneSelect = document.getElementById('scene-select');
+        sceneSelect.addEventListener('change', (e) => {
+            initViewer(e.target.value);
         });
 
         const viewerContainer = document.getElementById('viewer');

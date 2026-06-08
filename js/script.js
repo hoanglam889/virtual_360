@@ -58,16 +58,7 @@ const viewer = pannellum.viewer('panorama-viewer', {
             "hfov": 100,
             "minHfov": 50,
             "maxHfov": 120,
-            "hotSpots": [
-                {
-                    "pitch": 0,
-                    "yaw": 180,
-                    "type": "scene",
-                    "sceneId": "ga_thu_thiem",
-                    "text": "Quay về Ga Thủ Thiêm",
-                    "cssClass": "custom-arrow"
-                }
-            ]
+            "hotSpots": []
         },
         
         // Cảnh 3: Nút giao Cát Lái
@@ -82,16 +73,7 @@ const viewer = pannellum.viewer('panorama-viewer', {
             "hfov": 100,
             "minHfov": 50,
             "maxHfov": 120,
-            "hotSpots": [
-                {
-                    "pitch": 0,
-                    "yaw": 180,
-                    "type": "scene",
-                    "sceneId": "ga_thu_thiem",
-                    "text": "Quay về Ga Thủ Thiêm",
-                    "cssClass": "custom-arrow"
-                }
-            ]
+            "hotSpots": []
         }
     }
 });
