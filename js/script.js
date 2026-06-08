@@ -58,7 +58,24 @@ const viewer = pannellum.viewer('panorama-viewer', {
             "hfov": 100,
             "minHfov": 50,
             "maxHfov": 120,
-            "hotSpots": []
+            "hotSpots": [
+                {
+                    "pitch": -30.2784,
+                    "yaw": -15.3309,
+                    "type": "scene",
+                    "sceneId": "cat_lai",
+                    "text": "Nút giao Cát Lái",
+                    "cssClass": "custom-arrow"
+                },
+                {
+                    "pitch": -9.1069,
+                    "yaw": -61.4145,
+                    "type": "scene",
+                    "sceneId": "ga_thu_thiem",
+                    "text": "Ga Thủ Thiêm",
+                    "cssClass": "custom-arrow"
+                }
+            ]
         },
         
         // Cảnh 3: Nút giao Cát Lái
@@ -73,7 +90,24 @@ const viewer = pannellum.viewer('panorama-viewer', {
             "hfov": 100,
             "minHfov": 50,
             "maxHfov": 120,
-            "hotSpots": []
+            "hotSpots": [
+                {
+                    "pitch": -18.3883,
+                    "yaw": -168.5283,
+                    "type": "scene",
+                    "sceneId": "rach_chiec",
+                    "text": "Khu liên hợp TDTT Rạch Chiếc",
+                    "cssClass": "custom-arrow"
+                },
+                {
+                    "pitch": -3.8590,
+                    "yaw": -118.8417,
+                    "type": "scene",
+                    "sceneId": "ga_thu_thiem",
+                    "text": "Ga Thủ Thiêm",
+                    "cssClass": "custom-arrow"
+                }
+            ]
         }
     }
 });
@@ -87,6 +121,22 @@ const rotateIcon = document.getElementById('rotate-icon');
 const fullscreenBtn = document.getElementById('fullscreen-btn');
 const tourContainer = document.getElementById('tour-container');
 const homeBtn = document.getElementById('home-btn');
+const musicBtn = document.getElementById('music-btn');
+const musicIcon = document.getElementById('music-icon');
+
+/* ==========================================================================
+   Khởi tạo Âm thanh thuyết minh (Voice Narration)
+   ========================================================================== */
+const audioPlayer = new Audio();
+audioPlayer.loop = true; // Lặp nhạc thuyết minh làm nền
+let isMusicPlaying = false; // Trạng thái phát nhạc (mặc định tắt ban đầu)
+
+// Danh sách tệp âm thanh tương ứng với từng Scene ID
+const sceneAudios = {
+    "ga_thu_thiem": "musics/GA THỦ THIÊM VOICE.MP3",
+    "rach_chiec": "musics/RẠCH CHIẾC VOICE.MP3",
+    "cat_lai": "musics/CÁT LÁI VOI.MP3"
+};
 
 // Đóng mở bảng thông tin (Collapsible Header Overlay)
 const headerOverlay = document.getElementById('header-overlay');
@@ -109,17 +159,82 @@ if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
 }
 
 /* ==========================================
-   2. Xử lý Trạng thái Tải ảnh (Loading)
+   2. Xử lý Trạng thái Tải ảnh (Loading) & Phát nhạc đồng bộ
    ========================================== */
-// Lắng nghe sự kiện load để ẩn màn hình loading lúc tải trang ban đầu
+// Lắng nghe sự kiện load của Pannellum (khi ảnh panorama tải xong hoàn toàn)
 viewer.on('load', function() {
+    // Ẩn màn hình loading
     if (loadingOverlay.style.display !== 'none') {
         loadingOverlay.style.opacity = '0';
         setTimeout(() => {
             loadingOverlay.style.display = 'none';
         }, 600);
     }
+    
+    // Đồng bộ phát âm thanh của cảnh hiện tại chỉ sau khi ảnh tải xong hoàn toàn (để tránh lag)
+    const sceneId = viewer.getScene();
+    const audioUrl = sceneAudios[sceneId];
+    if (audioUrl) {
+        const encodedUrl = encodeURI(audioUrl);
+        // Cập nhật nguồn âm thanh nếu nguồn hiện tại khác với nguồn của cảnh này
+        if (!audioPlayer.src || !audioPlayer.src.endsWith(encodedUrl)) {
+            audioPlayer.src = encodedUrl;
+            audioPlayer.load();
+        }
+        
+        // Chỉ phát nếu người dùng đã bật chế độ âm thanh
+        if (isMusicPlaying) {
+            audioPlayer.play().catch(err => {
+                console.log("Không thể phát âm thanh thuyết minh tự động: ", err.message);
+            });
+        }
+    }
 });
+
+// Sự kiện Click bật/tắt nhạc thuyết minh
+if (musicBtn) {
+    musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        if (isMusicPlaying) {
+            // Đang phát -> Tắt đi
+            audioPlayer.pause();
+            isMusicPlaying = false;
+            musicBtn.setAttribute('data-tooltip', 'Bật thuyết minh');
+            if (musicIcon) {
+                musicIcon.innerHTML = `
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                `;
+            }
+        } else {
+            // Đang tắt -> Bật lên
+            isMusicPlaying = true;
+            musicBtn.setAttribute('data-tooltip', 'Tắt thuyết minh');
+            if (musicIcon) {
+                musicIcon.innerHTML = `
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                `;
+            }
+            
+            // Lấy nguồn nhạc và phát
+            const sceneId = viewer.getScene();
+            const audioUrl = sceneAudios[sceneId];
+            if (audioUrl) {
+                const encodedUrl = encodeURI(audioUrl);
+                if (!audioPlayer.src || !audioPlayer.src.endsWith(encodedUrl)) {
+                    audioPlayer.src = encodedUrl;
+                    audioPlayer.load();
+                }
+                audioPlayer.play().catch(err => {
+                    console.log("Không thể phát âm thanh: ", err.message);
+                });
+            }
+        }
+    });
+}
 
 /* ==========================================
    3. Tính năng Zoom In / Zoom Out
@@ -235,6 +350,10 @@ if (homeBtn) {
    Cập nhật thông tin tiêu đề/mô tả tương ứng với cảnh hiện tại
    ========================================== */
 viewer.on('scenechange', function(sceneId) {
+    // 1. Tạm dừng âm thanh cũ ngay lập tức khi bắt đầu chuyển cảnh để tránh lag và đè tiếng
+    audioPlayer.pause();
+    
+    // 2. Cập nhật nội dung tiêu đề/mô tả
     const title = document.querySelector('.header-overlay h1');
     const desc = document.querySelector('.header-overlay p');
     

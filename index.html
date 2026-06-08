@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
     
     <!-- Nhúng Style CSS tùy chỉnh đã được tách riêng (Thêm query param để tránh cache trình duyệt) -->
-    <link rel="stylesheet" href="css/style.css?v=2.8">
+    <link rel="stylesheet" href="css/style.css?v=2.9">
 </head>
 <body>
 
@@ -79,6 +79,16 @@
 
             <div class="divider"></div>
 
+            <!-- Nút Âm Thanh (Toggle Music) -->
+            <button class="ctrl-btn" id="music-btn" data-tooltip="Bật thuyết minh">
+                <svg id="music-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Biểu tượng loa tắt (Volume X) mặc định ban đầu -->
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                </svg>
+            </button>
+
             <!-- Nút Tự Động Xoay (Toggle Auto-rotate) -->
             <button class="ctrl-btn" id="auto-rotate-btn" data-tooltip="Tự động quay">
                 <svg id="rotate-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -101,6 +111,6 @@
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
     <!-- Nhúng Script JS điều khiển đã được tách riêng (Thêm query param để tránh cache trình duyệt) -->
-    <script src="js/script.js?v=2.6" defer></script>
+    <script src="js/script.js?v=2.7" defer></script>
 </body>
 </html>
