@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>360° Panorama Viewer | Premium Experience</title>
+    
+    <!-- Google Fonts: Inter & Outfit để có Typography hiện đại, sang trọng -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Nhúng thư viện Pannellum CSS từ CDN chính thức -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+    
+    <!-- Nhúng Style CSS tùy chỉnh đã được tách riêng (Thêm query param để tránh cache trình duyệt) -->
+    <link rel="stylesheet" href="css/style.css?v=2.1">
+</head>
+<body>
+
+    <div id="tour-container">
+        
+        <!-- 1. Màn hình Loading -->
+        <div id="loading-overlay">
+            <div class="loader-ring"></div>
+            <div class="loader-text">Đang tải...</div>
+        </div>
+
+        <!-- 2. Khung chứa Pannellum Viewer -->
+        <div id="panorama-viewer"></div>
+
+        <!-- 3. Header & Info Overlay (Có tính năng đóng/mở linh hoạt) -->
+        <div class="header-overlay" id="header-overlay">
+            <!-- Nút đóng mở thông tin -->
+            <button class="info-toggle-btn" id="info-toggle-btn" data-tooltip="Ẩn thông tin">
+                <!-- Mặc định hiển thị dấu X (đóng) vì khi tải trang ở desktop sẽ mở rộng -->
+                <svg id="info-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="header-content" id="header-content">
+                <h1>Virtual Viewer 360°</h1>
+                <p>Trình xem ảnh toàn cảnh Panorama sống động và mượt mà tích hợp WebGL.</p>
+                <div class="instruction-badge">
+                    <!-- SVG Icon Mouse -->
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="5" y="2" width="14" height="20" rx="7" />
+                        <line x1="12" y1="6" x2="12" y2="10" />
+                    </svg>
+                    <span id="instruction-text">Kéo để xoay / Cuộn để zoom</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Thanh điều khiển tùy chỉnh (Custom Control Bar) -->
+        <div class="controls-overlay">
+            <!-- Nút Phóng To (Zoom In) -->
+            <button class="ctrl-btn" id="zoom-in-btn" data-tooltip="Phóng to">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+
+            <!-- Nút Thu Nhỏ (Zoom Out) -->
+            <button class="ctrl-btn" id="zoom-out-btn" data-tooltip="Thu nhỏ">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+
+            <div class="divider"></div>
+
+            <!-- Nút Tự Động Xoay (Toggle Auto-rotate) -->
+            <button class="ctrl-btn" id="auto-rotate-btn" data-tooltip="Tự động quay">
+                <svg id="rotate-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>
+            </button>
+
+            <!-- Nút Toàn Màn Hình (Fullscreen) -->
+            <button class="ctrl-btn" id="fullscreen-btn" data-tooltip="Toàn màn hình">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Nhúng thư viện Pannellum JS từ CDN chính thức -->
+    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+
+    <!-- Nhúng Script JS điều khiển đã được tách riêng (Thêm query param để tránh cache trình duyệt) -->
+    <script src="js/script.js?v=2.1" defer></script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+/* ==========================================================================
+   360° Panorama Viewer Style Sheet - Responsive & Premium
+   ========================================================================== */
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    --accent-gradient: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
+    --glass-bg: rgba(15, 22, 36, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-hover-border: rgba(255, 255, 255, 0.2);
+    --text-light: #f8fafc;
+    --text-muted: #94a3b8;
+    --shadow-lg: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background-color: #0b0f19;
+    color: var(--text-light);
+}
+
+/* ==========================================
+   2. Container của Tour & Viewer
+   ========================================== */
+#tour-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Container của Pannellum (WebGL container) */
+#panorama-viewer {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+#panorama-viewer:active {
+    cursor: grabbing;
+}
+
+/* Ẩn các nút điều khiển mặc định của Pannellum để thay bằng Custom UI */
+.pnlm-control-bar, .pnlm-zoom-controls, .pnlm-fullscreen-toggle-button {
+    display: none !important;
+}
+
+/* ==========================================
+   3. UI Overlay: Header & Info Panel (Collapsible)
+   ========================================== */
+.header-overlay {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    z-index: 10;
+    padding: 18px 24px;
+    border-radius: 16px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+    
+    /* Thiết lập chiều rộng & chiều cao cố định để hiệu ứng slide/transition mượt mà */
+    width: 320px;
+    height: 165px;
+    overflow: hidden;
+    pointer-events: auto;
+    
+    /* Hiệu ứng chuyển động thu gọn mượt mà */
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s ease,
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+}
+
+.header-overlay:hover {
+    border-color: var(--glass-hover-border);
+    transform: translateY(-2px);
+}
+
+/* Nội dung của Header */
+.header-content {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.2s ease 0.1s;
+    width: 272px; /* Chiều rộng cố định để text không bị bóp méo khi co giãn */
+}
+
+/* Trạng thái THU GỌN (Collapsed) của Header */
+.header-overlay.collapsed {
+    width: 48px;
+    height: 48px; /* Thiết lập chiều cao cụ thể để tránh bị sập về 0px do float/absolute child */
+    padding: 0;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.header-overlay.collapsed:hover {
+    transform: scale(1.05);
+    border-color: var(--glass-hover-border);
+}
+
+.header-overlay.collapsed .header-content {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+    height: 0;
+    padding: 0;
+    transition: opacity 0.1s ease;
+}
+
+/* Nút Đóng / Mở Header Overlay */
+.info-toggle-btn {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+    z-index: 12;
+}
+
+.info-toggle-btn:hover {
+    background: var(--primary-gradient);
+    color: #0b0f19;
+}
+
+/* Khi thu gọn, nút toggle giãn rộng 100% để người dùng tap vào bất kỳ đâu trên hình tròn đều có thể mở lại */
+.header-overlay.collapsed .info-toggle-btn {
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border-radius: 50%;
+}
+
+/* Styling chữ trong Header */
+.header-overlay h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+    padding-right: 30px; /* Tránh đè chữ lên nút toggle */
+}
+
+.header-overlay p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+/* Hướng dẫn thao tác nhỏ */
+.instruction-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.06);
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================
+   4. Custom Control Bar (Nổi ở đáy màn hình)
+   ========================================== */
+.controls-overlay {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 18px;
+    border-radius: 40px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition-smooth);
+}
+
+.controls-overlay:hover {
+    border-color: var(--glass-hover-border);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* Nút điều khiển */
+.ctrl-btn {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    outline: none;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.ctrl-btn:hover {
+    background: var(--primary-gradient);
+    color: #0b0f19;
+    transform: scale(1.08);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+}
+
+.ctrl-btn:active {
+    transform: scale(0.95);
+}
+
+/* Tooltip trên nút điều khiển */
+.ctrl-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: var(--transition-smooth);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: var(--shadow-lg);
+}
+
+.ctrl-btn:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Đường phân cách nhỏ trong thanh điều khiển */
+.divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 0 4px;
+}
+
+/* ==========================================
+   5. Màn hình Loading
+   ========================================== */
+#loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0b0f19;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.loader-ring {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    position: relative;
+    background: conic-gradient(from 0deg, transparent 30%, #00f2fe);
+    animation: spin 1s linear infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader-ring::after {
+    content: '';
+    position: absolute;
+    width: 58px;
+    height: 58px;
+    background-color: #0b0f19;
+    border-radius: 50%;
+}
+
+.loader-text {
+    margin-top: 24px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    color: var(--text-light);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: pulse 1.8s infinite ease-in-out;
+}
+
+/* ==========================================
+   6. Animations
+   ========================================== */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+/* ==========================================
+   7. Tối ưu hóa Responsive cho thiết bị di động
+   ========================================== */
+
+/* 7.1. Tắt Tooltip trên màn hình cảm ứng để tránh lỗi dính (sticky tooltips) */
+@media (hover: none) {
+    .ctrl-btn::after, .info-toggle-btn::after {
+        display: none !important;
+    }
+}
+
+/* 7.2. Mobile Portrait (Màn hình dọc - VD: Dưới 768px) */
+@media (max-width: 768px) {
+    .header-overlay {
+        top: 16px;
+        left: 16px;
+        /* Rộng tối đa 360px để đẹp, nếu màn hình nhỏ hơn thì co giãn rộng 100% trừ đi lề */
+        width: calc(100vw - 32px);
+        max-width: 360px;
+        height: 165px;
+    }
+    
+    .header-content {
+        /* Cho phép giãn rộng theo kích thước container */
+        width: 100%;
+        padding-right: 24px; /* Nhường chỗ cho nút info-toggle */
+    }
+
+    .header-overlay.collapsed {
+        width: 44px;
+        height: 44px; /* Kích thước chiều dọc cụ thể */
+    }
+
+    .header-overlay.collapsed .header-content {
+        width: 0;
+        height: 0;
+    }
+
+    .info-toggle-btn {
+        top: 8px;
+        right: 8px;
+        width: 28px;
+        height: 28px;
+    }
+
+    .controls-overlay {
+        bottom: 24px;
+        padding: 8px 14px;
+        gap: 10px;
+    }
+
+    .ctrl-btn {
+        width: 44px; /* Đảm bảo kích thước tối thiểu cho ngón tay dễ chạm */
+        height: 44px;
+    }
+}
+
+/* 7.3. Mobile Landscape (Màn hình ngang - VD: Chiều cao dưới 480px) */
+@media (max-height: 480px) and (orientation: landscape) {
+    .header-overlay {
+        top: 12px;
+        left: 12px;
+        width: 280px;
+        height: 54px; /* Chiều cao cố định mở rộng trong màn hình ngang */
+        padding: 12px 16px;
+    }
+    
+    .header-content {
+        width: 100%;
+        padding-right: 20px;
+    }
+
+    .header-overlay h1 {
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+
+    /* Ẩn bớt mô tả dài và badge để tiết kiệm chiều cao khi nằm ngang */
+    .header-overlay p, 
+    .header-overlay .instruction-badge {
+        display: none !important;
+    }
+
+    .header-overlay.collapsed {
+        width: 40px;
+        height: 40px; /* Chiều cao cố định thu gọn trong màn hình ngang */
+    }
+
+    .info-toggle-btn {
+        top: 6px;
+        right: 6px;
+        width: 26px;
+        height: 26px;
+    }
+
+    .controls-overlay {
+        bottom: 12px;
+        padding: 6px 12px;
+        gap: 8px;
+    }
+
+    .ctrl-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .divider {
+        height: 18px;
+    }
+}
