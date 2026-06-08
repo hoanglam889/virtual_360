@@ -9,7 +9,7 @@ const viewer = pannellum.viewer('panorama-viewer', {
     "default": {
         "firstScene": "ga_thu_thiem",
         "sceneFadeDuration": 1000, // Hiệu ứng chuyển cảnh mờ dần mượt mà 1 giây
-        "author": "Virtual 360"
+        "author": "Hoanglam889"
     },
     
     "scenes": {
@@ -241,7 +241,7 @@ viewer.on('scenechange', function(sceneId) {
     if (!title || !desc) return;
     
     if (sceneId === 'ga_thu_thiem') {
-        title.innerText = "Virtual Viewer 360°";
+        title.innerText = "Ga Thủ Thiêm 360°";
         desc.innerText = "Trình xem ảnh toàn cảnh Panorama sống động và mượt mà tích hợp WebGL.";
     } else if (sceneId === 'rach_chiec') {
         title.innerText = "Rạch Chiếc 360°";
