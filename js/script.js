@@ -33,6 +33,23 @@ function zoomToTarget3D(pitch, yaw, targetHfov = 45, duration = 1200, onComplete
     }
 }
 
+/**
+ * Hàm xử lý sự kiện click của hotspot để chuyển cảnh 3D có kèm hiệu ứng zoom-in
+ */
+function handleSceneTransitionHotspot(event, args) {
+    const { pitch, yaw, targetSceneId } = args;
+    zoomToTarget3D(pitch, yaw, 45, 1200, () => {
+        const loading = document.getElementById('loading-overlay');
+        if (loading) {
+            loading.style.display = 'flex';
+            loading.style.opacity = '1';
+        }
+        setTimeout(() => {
+            viewer.loadScene(targetSceneId);
+        }, 150);
+    });
+}
+
 /* ==========================================================================
    Khởi tạo Pannellum Viewer với Multi-scenes (Đa cảnh)
    ========================================================================== */
@@ -64,18 +81,8 @@ const viewer = pannellum.viewer('panorama-viewer', {
                     "type": "info",
                     "text": "Khu liên hợp TDTT Rạch Chiếc",
                     "cssClass": "custom-arrow",
-                    "clickHandlerFunc": () => {
-                        zoomToTarget3D(-1.2864, 156.6523, 45, 1200, () => {
-                            const loading = document.getElementById('loading-overlay');
-                            if (loading) {
-                                loading.style.display = 'flex';
-                                loading.style.opacity = '1';
-                            }
-                            setTimeout(() => {
-                                viewer.loadScene("rach_chiec");
-                            }, 150);
-                        });
-                    }
+                    "clickHandlerFunc": handleSceneTransitionHotspot,
+                    "clickHandlerArgs": { "pitch": -1.2864, "yaw": 156.6523, "targetSceneId": "rach_chiec" }
                 },
                 {
                     "pitch": -2.3097,
@@ -83,18 +90,8 @@ const viewer = pannellum.viewer('panorama-viewer', {
                     "type": "info",
                     "text": "Nút giao Cát Lái",
                     "cssClass": "custom-arrow",
-                    "clickHandlerFunc": () => {
-                        zoomToTarget3D(-2.3097, 124.4251, 45, 1200, () => {
-                            const loading = document.getElementById('loading-overlay');
-                            if (loading) {
-                                loading.style.display = 'flex';
-                                loading.style.opacity = '1';
-                            }
-                            setTimeout(() => {
-                                viewer.loadScene("cat_lai");
-                            }, 150);
-                        });
-                    }
+                    "clickHandlerFunc": handleSceneTransitionHotspot,
+                    "clickHandlerArgs": { "pitch": -2.3097, "yaw": 124.4251, "targetSceneId": "cat_lai" }
                 }
             ]
         },
@@ -118,18 +115,8 @@ const viewer = pannellum.viewer('panorama-viewer', {
                     "type": "info",
                     "text": "Nút giao Cát Lái",
                     "cssClass": "custom-arrow",
-                    "clickHandlerFunc": () => {
-                        zoomToTarget3D(-30.2784, -15.3309, 45, 1200, () => {
-                            const loading = document.getElementById('loading-overlay');
-                            if (loading) {
-                                loading.style.display = 'flex';
-                                loading.style.opacity = '1';
-                            }
-                            setTimeout(() => {
-                                viewer.loadScene("cat_lai");
-                            }, 150);
-                        });
-                    }
+                    "clickHandlerFunc": handleSceneTransitionHotspot,
+                    "clickHandlerArgs": { "pitch": -30.2784, "yaw": -15.3309, "targetSceneId": "cat_lai" }
                 },
                 {
                     "pitch": -9.1069,
@@ -137,18 +124,8 @@ const viewer = pannellum.viewer('panorama-viewer', {
                     "type": "info",
                     "text": "Ga Thủ Thiêm",
                     "cssClass": "custom-arrow",
-                    "clickHandlerFunc": () => {
-                        zoomToTarget3D(-9.1069, -61.4145, 45, 1200, () => {
-                            const loading = document.getElementById('loading-overlay');
-                            if (loading) {
-                                loading.style.display = 'flex';
-                                loading.style.opacity = '1';
-                            }
-                            setTimeout(() => {
-                                viewer.loadScene("ga_thu_thiem");
-                            }, 150);
-                        });
-                    }
+                    "clickHandlerFunc": handleSceneTransitionHotspot,
+                    "clickHandlerArgs": { "pitch": -9.1069, "yaw": -61.4145, "targetSceneId": "ga_thu_thiem" }
                 }
             ]
         },
@@ -172,18 +149,8 @@ const viewer = pannellum.viewer('panorama-viewer', {
                     "type": "info",
                     "text": "Khu liên hợp TDTT Rạch Chiếc",
                     "cssClass": "custom-arrow",
-                    "clickHandlerFunc": () => {
-                        zoomToTarget3D(-18.3883, -168.5283, 45, 1200, () => {
-                            const loading = document.getElementById('loading-overlay');
-                            if (loading) {
-                                loading.style.display = 'flex';
-                                loading.style.opacity = '1';
-                            }
-                            setTimeout(() => {
-                                viewer.loadScene("rach_chiec");
-                            }, 150);
-                        });
-                    }
+                    "clickHandlerFunc": handleSceneTransitionHotspot,
+                    "clickHandlerArgs": { "pitch": -18.3883, "yaw": -168.5283, "targetSceneId": "rach_chiec" }
                 },
                 {
                     "pitch": -3.8590,
@@ -191,18 +158,8 @@ const viewer = pannellum.viewer('panorama-viewer', {
                     "type": "info",
                     "text": "Ga Thủ Thiêm",
                     "cssClass": "custom-arrow",
-                    "clickHandlerFunc": () => {
-                        zoomToTarget3D(-3.8590, -118.8417, 45, 1200, () => {
-                            const loading = document.getElementById('loading-overlay');
-                            if (loading) {
-                                loading.style.display = 'flex';
-                                loading.style.opacity = '1';
-                            }
-                            setTimeout(() => {
-                                viewer.loadScene("ga_thu_thiem");
-                            }, 150);
-                        });
-                    }
+                    "clickHandlerFunc": handleSceneTransitionHotspot,
+                    "clickHandlerArgs": { "pitch": -3.8590, "yaw": -118.8417, "targetSceneId": "ga_thu_thiem" }
                 }
             ]
         }
@@ -801,7 +758,7 @@ if (polySanBong && polyTooltip) {
         polySanBong.setAttribute('fill', 'rgba(0, 242, 254, 0.4)');
         polySanBong.setAttribute('stroke-width', '3.5');
         
-        polyTooltip.innerText = "SVĐ Rạch Chiếc";
+        polyTooltip.innerText = "SVĐ Rạch Chiếc (Mở tài liệu Drive)";
         polyTooltip.style.borderColor = "#00f2fe";
         polyTooltip.style.display = 'block';
         setTimeout(() => {
@@ -831,7 +788,7 @@ if (polySanBong && polyTooltip) {
     
     polySanBong.addEventListener('click', (e) => {
         e.stopPropagation();
-        openVideoModal("lX3ubrfFW7M");
+        openVideoModal("https://drive.google.com/file/d/1AiF3cfcqJ93X76EhLoK6_xnuiV97Qo9k/preview?autoplay=1");
     });
 }
 
@@ -845,7 +802,7 @@ const videoModalBackdrop = document.querySelector('.video-modal-backdrop');
 
 let wasMusicPlayingBeforeVideo = false;
 
-function openVideoModal(youtubeId, startSeconds = 0) {
+function openVideoModal(videoUrl) {
     if (!videoModal || !videoIframe) return;
     
     // Lưu trạng thái âm thanh thuyết minh
@@ -854,9 +811,8 @@ function openVideoModal(youtubeId, startSeconds = 0) {
         audioPlayer.pause();
     }
     
-    // Gán source iframe có autoplay=1 để tự phát khi hiện popup
-    const startQuery = startSeconds > 0 ? `&start=${startSeconds}` : '';
-    videoIframe.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1${startQuery}`;
+    // Gán source iframe (chấp nhận cả link YouTube lẫn Google Drive preview)
+    videoIframe.src = videoUrl;
     
     // Hiển thị modal
     videoModal.style.display = 'flex';
