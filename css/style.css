@@ -525,6 +525,15 @@ body, html {
     }
 }
 
+/* Loại bỏ vòng tròn mặc định của info hotspot trong Pannellum khi dùng cssClass tùy chỉnh */
+.pnlm-hotspot.custom-arrow, 
+.pnlm-hotspot.custom-map-icon {
+    background: none !important;
+    border: none !important;
+    width: auto !important;
+    height: auto !important;
+}
+
 /* Custom Hotspot: Mũi tên trỏ xuống */
 .custom-arrow {
     width: 32px;

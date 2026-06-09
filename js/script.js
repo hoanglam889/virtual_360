@@ -61,18 +61,40 @@ const viewer = pannellum.viewer('panorama-viewer', {
                 {
                     "pitch": -1.2864,
                     "yaw": 156.6523,
-                    "type": "scene",
-                    "sceneId": "rach_chiec",
+                    "type": "info",
                     "text": "Khu liên hợp TDTT Rạch Chiếc",
-                    "cssClass": "custom-arrow"
+                    "cssClass": "custom-arrow",
+                    "clickHandlerFunc": () => {
+                        zoomToTarget3D(-1.2864, 156.6523, 45, 1200, () => {
+                            const loading = document.getElementById('loading-overlay');
+                            if (loading) {
+                                loading.style.display = 'flex';
+                                loading.style.opacity = '1';
+                            }
+                            setTimeout(() => {
+                                viewer.loadScene("rach_chiec");
+                            }, 150);
+                        });
+                    }
                 },
                 {
                     "pitch": -2.3097,
                     "yaw": 124.4251,
-                    "type": "scene",
-                    "sceneId": "cat_lai",
+                    "type": "info",
                     "text": "Nút giao Cát Lái",
-                    "cssClass": "custom-arrow"
+                    "cssClass": "custom-arrow",
+                    "clickHandlerFunc": () => {
+                        zoomToTarget3D(-2.3097, 124.4251, 45, 1200, () => {
+                            const loading = document.getElementById('loading-overlay');
+                            if (loading) {
+                                loading.style.display = 'flex';
+                                loading.style.opacity = '1';
+                            }
+                            setTimeout(() => {
+                                viewer.loadScene("cat_lai");
+                            }, 150);
+                        });
+                    }
                 }
             ]
         },
@@ -93,18 +115,40 @@ const viewer = pannellum.viewer('panorama-viewer', {
                 {
                     "pitch": -30.2784,
                     "yaw": -15.3309,
-                    "type": "scene",
-                    "sceneId": "cat_lai",
+                    "type": "info",
                     "text": "Nút giao Cát Lái",
-                    "cssClass": "custom-arrow"
+                    "cssClass": "custom-arrow",
+                    "clickHandlerFunc": () => {
+                        zoomToTarget3D(-30.2784, -15.3309, 45, 1200, () => {
+                            const loading = document.getElementById('loading-overlay');
+                            if (loading) {
+                                loading.style.display = 'flex';
+                                loading.style.opacity = '1';
+                            }
+                            setTimeout(() => {
+                                viewer.loadScene("cat_lai");
+                            }, 150);
+                        });
+                    }
                 },
                 {
                     "pitch": -9.1069,
                     "yaw": -61.4145,
-                    "type": "scene",
-                    "sceneId": "ga_thu_thiem",
+                    "type": "info",
                     "text": "Ga Thủ Thiêm",
-                    "cssClass": "custom-arrow"
+                    "cssClass": "custom-arrow",
+                    "clickHandlerFunc": () => {
+                        zoomToTarget3D(-9.1069, -61.4145, 45, 1200, () => {
+                            const loading = document.getElementById('loading-overlay');
+                            if (loading) {
+                                loading.style.display = 'flex';
+                                loading.style.opacity = '1';
+                            }
+                            setTimeout(() => {
+                                viewer.loadScene("ga_thu_thiem");
+                            }, 150);
+                        });
+                    }
                 }
             ]
         },
@@ -125,18 +169,40 @@ const viewer = pannellum.viewer('panorama-viewer', {
                 {
                     "pitch": -18.3883,
                     "yaw": -168.5283,
-                    "type": "scene",
-                    "sceneId": "rach_chiec",
+                    "type": "info",
                     "text": "Khu liên hợp TDTT Rạch Chiếc",
-                    "cssClass": "custom-arrow"
+                    "cssClass": "custom-arrow",
+                    "clickHandlerFunc": () => {
+                        zoomToTarget3D(-18.3883, -168.5283, 45, 1200, () => {
+                            const loading = document.getElementById('loading-overlay');
+                            if (loading) {
+                                loading.style.display = 'flex';
+                                loading.style.opacity = '1';
+                            }
+                            setTimeout(() => {
+                                viewer.loadScene("rach_chiec");
+                            }, 150);
+                        });
+                    }
                 },
                 {
                     "pitch": -3.8590,
                     "yaw": -118.8417,
-                    "type": "scene",
-                    "sceneId": "ga_thu_thiem",
+                    "type": "info",
                     "text": "Ga Thủ Thiêm",
-                    "cssClass": "custom-arrow"
+                    "cssClass": "custom-arrow",
+                    "clickHandlerFunc": () => {
+                        zoomToTarget3D(-3.8590, -118.8417, 45, 1200, () => {
+                            const loading = document.getElementById('loading-overlay');
+                            if (loading) {
+                                loading.style.display = 'flex';
+                                loading.style.opacity = '1';
+                            }
+                            setTimeout(() => {
+                                viewer.loadScene("ga_thu_thiem");
+                            }, 150);
+                        });
+                    }
                 }
             ]
         }
