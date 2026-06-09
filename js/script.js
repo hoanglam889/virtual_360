@@ -16,6 +16,23 @@ const viewer2D = document.getElementById('viewer-2d');
 const img2D = document.getElementById('img-2d');
 const svgOverlay2D = document.getElementById('svg-overlay-2d');
 
+/**
+ * Hiệu ứng phóng to / bay camera vào một tọa độ chỉ định trong không gian 3D
+ * @param {number} pitch - Vĩ độ đích
+ * @param {number} yaw - Kinh độ đích
+ * @param {number} targetHfov - Độ thu phóng mục tiêu (mặc định 45)
+ * @param {number} duration - Thời gian bay (ms, mặc định 1200ms)
+ * @param {function} onComplete - Hàm gọi sau khi zoom xong
+ */
+function zoomToTarget3D(pitch, yaw, targetHfov = 45, duration = 1200, onComplete) {
+    if (!viewer) return;
+    viewer.stopAutoRotate();
+    viewer.lookAt(pitch, yaw, targetHfov, duration);
+    if (onComplete) {
+        setTimeout(onComplete, duration);
+    }
+}
+
 /* ==========================================================================
    Khởi tạo Pannellum Viewer với Multi-scenes (Đa cảnh)
    ========================================================================== */
@@ -357,7 +374,8 @@ if (homeBtn) {
         e.stopPropagation();
         
         if (is2DMode) {
-            exit2DScene('ga_thu_thiem');
+            // Quay lại cảnh 3D trước khi vào 2D, thay vì luôn trả về Ga Thủ Thiêm
+            exit2DScene();
         } else {
             // Nếu đang ở cảnh khác, tải lại cảnh Ga Thủ Thiêm
             if (viewer.getScene() !== 'ga_thu_thiem') {
@@ -482,10 +500,33 @@ if (polyRachChiec && polyTooltip) {
         }, 200);
     });
 
-    // Khi click vào đa giác 3D: Chuyển sang Sơ đồ 2D của Sân bóng
+    // Khi click vào đa giác 3D: Phóng to (zoom) và chuyển sang Sơ đồ 2D của Sân bóng
     polyRachChiec.addEventListener('click', (e) => {
         e.stopPropagation();
-        switchTo2DScene("images/2D/SANBONG.jpg", "rach_chiec");
+        
+        // Tâm của đa giác Rạch Chiếc nằm khoảng: Pitch -35.6, Yaw 78.5
+        zoomToTarget3D(-35.6, 78.5, 45, 1200, () => {
+            // Hiện loading overlay mượt mà
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+                loadingOverlay.style.opacity = '1';
+            }
+            
+            setTimeout(() => {
+                switchTo2DScene("images/2D/SANBONG.jpg", "rach_chiec");
+                
+                // Ẩn loading overlay sau khi chuyển đổi xong
+                if (loadingOverlay) {
+                    setTimeout(() => {
+                        loadingOverlay.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                        }, 600);
+                    }, 400);
+                }
+            }, 300);
+        });
     });
 }
 
@@ -724,7 +765,7 @@ if (polySanBong && polyTooltip) {
     
     polySanBong.addEventListener('click', (e) => {
         e.stopPropagation();
-        openVideoModal("7VxhUqCbQzY");
+        openVideoModal("lX3ubrfFW7M");
     });
 }
 
@@ -738,7 +779,7 @@ const videoModalBackdrop = document.querySelector('.video-modal-backdrop');
 
 let wasMusicPlayingBeforeVideo = false;
 
-function openVideoModal(youtubeId) {
+function openVideoModal(youtubeId, startSeconds = 0) {
     if (!videoModal || !videoIframe) return;
     
     // Lưu trạng thái âm thanh thuyết minh
@@ -748,7 +789,8 @@ function openVideoModal(youtubeId) {
     }
     
     // Gán source iframe có autoplay=1 để tự phát khi hiện popup
-    videoIframe.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1`;
+    const startQuery = startSeconds > 0 ? `&start=${startSeconds}` : '';
+    videoIframe.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1${startQuery}`;
     
     // Hiển thị modal
     videoModal.style.display = 'flex';
